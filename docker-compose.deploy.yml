@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+    mongo:
+        image: mongo:4.4
+        restart: unless-stopped
+        network_mode: host
+
+    callaba-cloud-api:
+        depends_on:
+            - mongo
+        image: ryazantseff/cc-api-prod:${STACK_VERSION}
+        restart: unless-stopped
+        environment: 
+            - NODE_ENV=production
+            - NODE_APP
+            - AWS_META_DATA_URL=http://169.254.169.254/latest/meta-data/instance-id
+            - PORT=3021
+            - MONGODB_URI=mongodb://localhost:27017/
+            - MONGODB_DB_MAIN=peers
+            - ADMIN_EMAIL=admin
+            - ADMIN_PASSWORD=password
+            - APP_TYPE=SRT_LIVE_STREAMING
+            - API_KEY_GENERATOR_TOKEN=SOME-TOKEN
+            - USER_MEDIA_WIDTH_MIN=50
+            - USER_MEDIA_WIDTH_MAX=1024
+            - LOCALHOST_ADDRESS=127.0.0.1
+            - X=eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaGNzZXJ2ZXJfcGFzc3BocmFzZXNlcnZlcl9wYXNzcGhyYXNldnNkc2Zkc24gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ
+        network_mode: host
+        working_dir: /callaba-cloud-api-production-aws
+        command: bash -c "wait-for-it -t 300 localhost:27017 && sleep 20 && node ./dist/config/server/index.js"
+        
+    callaba-cloud-frontend:
+        depends_on:
+            - mongo
+            - callaba-cloud-api
+        image: ryazantseff/cc-front-prod:${STACK_VERSION}
+        restart: unless-stopped
+        privileged: true
+        environment: 
+            - NEXT_PUBLIC_API_URL=http://localhost:3021
+            - NEXT_PUBLIC_API_PORT=3021
+            - NEXT_PUBLIC_API_ENDPOINT_SIGN_UP='/auth/signup'
+            - NEXT_PUBLIC_API_ENDPOINT_SIGN_IN='/auth/signin'
+        network_mode: host
+        working_dir: /callaba-cloud-dashboard-development
+        command: bash -c "wait-for-it -t 300 localhost:3021 && sleep 10 && npm run production"
