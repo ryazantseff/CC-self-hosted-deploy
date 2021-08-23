@@ -9,7 +9,7 @@ services:
     callaba-cloud-api:
         depends_on:
             - mongo
-        image: ryazantseff/cc-api-prod:${STACK_VERSION}
+        image: callabacloud/cc-api-prod:${STACK_VERSION}
         restart: unless-stopped
         environment: 
             - NODE_ENV=production
@@ -34,7 +34,7 @@ services:
         depends_on:
             - mongo
             - callaba-cloud-api
-        image: ryazantseff/cc-front-prod:${STACK_VERSION}
+        image: callabacloud/cc-front-prod:${STACK_VERSION}
         restart: unless-stopped
         privileged: true
         environment: 
