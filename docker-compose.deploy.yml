@@ -29,7 +29,7 @@ services:
             - X=eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaGNzZXJ2ZXJfcGFzc3BocmFzZXNlcnZlcl9wYXNzcGhyYXNldnNkc2Zkc24gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ
         network_mode: host
         working_dir: /callaba-cloud-api-production-aws
-        command: bash -c "wait-for-it -t 300 localhost:27017 && sleep 20 && node ./dist/config/server/index.js"
+        command: bash -c "wait-for-it -t 300 localhost:27017 && sleep 20 && npm i && node ./dist/config/server/index.js"
         
     callaba-cloud-frontend:
         depends_on:
